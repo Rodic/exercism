@@ -28,5 +28,6 @@ defmodule School do
   def sort(db) do
     db
     |> Enum.map(fn {grade, names} -> {grade, Enum.sort(names)} end)
+    |> List.keysort(0)
   end
 end
