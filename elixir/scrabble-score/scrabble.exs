@@ -18,7 +18,8 @@ defmodule Scrabble do
   def score(word) do
     word
     |> String.graphemes
-    |> Enum.map(&Map.get(@scores, String.upcase(&1), 0))
-    |> Enum.sum
+    |> Enum.reduce(0, fn l, acc ->
+      acc + Map.get(@scores, String.upcase(l), 0)
+    end)
   end
 end
