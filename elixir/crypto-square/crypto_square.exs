@@ -15,16 +15,24 @@ defmodule CryptoSquare do
 
     row_length = letters_list |> Enum.count |> get_row_length
 
-    letters_list
-      |> inverse(row_length, 0, [])
-      |> Enum.map(&Enum.join/1)
-      |> Enum.join(" ")
+    letters_list |> transform(row_length)
   end
 
-  defp inverse([], _, _, _),  do: []
-  defp inverse(_, n, n, acc), do: acc |> Enum.reverse
-  defp inverse(ls=[_|ls_], row_length, rows_taken, acc) do
-    inverse(ls_, row_length, rows_taken + 1, [Enum.take_every(ls, row_length)|acc])
+  defp transform([], _, _), do: []
+  defp transform(letters, row_length) do
+    acc = 1..row_length
+      |> Enum.into(%{}, &({&1 - 1, []}))
+
+    transform_aux(letters, 0, row_length, acc)
+      |> Map.values
+      |> Enum.map_join(" ", &(Enum.reverse(&1) |> Enum.join))
+  end
+
+  defp transform_aux([], _, _, acc), do: acc
+  defp transform_aux([letter|letters], counter, rows_length, acc) do
+    index   = rem(counter, rows_length)
+    updated = [letter|acc[index]]
+    transform_aux(letters, counter+1, rows_length, Map.put(acc, index, updated))
   end
 
   defp get_row_length(count) do
